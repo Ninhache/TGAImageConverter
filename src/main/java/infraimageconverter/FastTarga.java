@@ -5,9 +5,7 @@
  */
 package infraimageconverter;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,25 +38,21 @@ class FastTarga {
 
     public static BufferedImage decode(byte[] buf) throws IOException {
         offset = 0;
-
-        // Reading header bytes
-        // buf[2]=image type code 0x02=uncompressed BGR or BGRA
-        // buf[12]+[13]=width
-        // buf[14]+[15]=height
-        // buf[16]=image pixel size 0x20=32bit, 0x18=24bit
-        // buf{17]=Image Descriptor Byte=0x28 (00101000)=32bit/origin 
-        //         upperleft/non-interleaved
+    
+        // Read the header
         for (int i = 0; i < 12; i++)
             read(buf);
-        int width = read(buf) + (read(buf) << 8);   // 00,04=1024
-        int height = read(buf) + (read(buf) << 8);  // 40,02=576
+        int width = read(buf) + (read(buf) << 8);
+        int height = read(buf) + (read(buf) << 8);
         read(buf);
-        read(buf);
-
+        int buf_17 = read(buf);  // Image Descriptor Byte
+    
+        boolean topToBottom = (buf_17 & 0x20) != 0;  // Check the 5th bit
+    
         int n = width * height;
         int[] pixels = new int[n];
         int idx = 0;
-
+    
         if (buf[2] == 0x02 && buf[16] == 0x20) { // uncompressed BGRA
             while (n > 0) {
                 int b = read(buf);
@@ -102,9 +96,18 @@ class FastTarga {
                 n -= nb + 1;
             }
         }
-
+    
         BufferedImage bimg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        bimg.setRGB(0, 0, width,height, pixels, 0,width);
+    
+        // Write the pixels to the image, accounting for orientation
+        if (topToBottom) {
+            bimg.setRGB(0, 0, width, height, pixels, 0, width);
+        } else {
+            for (int y = 0; y < height; y++) {
+                bimg.setRGB(0, y, width, 1, pixels, (height - 1 - y) * width, width);
+            }
+        }
+    
         return bimg;
     }
-}
+}    
