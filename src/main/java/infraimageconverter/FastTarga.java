@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package infraimageconverter;
 
 import java.awt.image.BufferedImage;
@@ -11,10 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-/**
- *
- * @author Aero
- */
 class FastTarga {
     public static BufferedImage getImage(String fileName) throws IOException {
         File f = new File(fileName);

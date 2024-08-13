@@ -82,14 +82,11 @@ public class InfraImageConverter {
                                 System.out.println("Reading " + f.getName() + "...");
                                 BufferedImage image = FastTarga_lowmem.getImage(f.toString());
 
-                                // Calculate relative path based on the source directory
                                 String relativePath = f.getParent().substring(directoryPath.length());
-
-                                // Create output directory in the specified output path
+                                
                                 File outputDir = new File(outputPath + "/" + relativePath);
                                 outputDir.mkdirs();
-
-                                // Write the output file to the specified output directory
+                                
                                 File outputFile = new File(outputDir, f.getName().substring(0, f.getName().length() - 3) + targetFormat);
                                 ImageIO.write(image, targetFormat, new File(outputFile.toString() + ".temp"));
                                 new File(outputFile.toString() + ".temp").renameTo(outputFile);
