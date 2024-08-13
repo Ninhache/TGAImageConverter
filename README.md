@@ -1,5 +1,5 @@
 # TGAImageConverter
-A simple script for quickly converting all .TGA files in a folder to a format
+A simple script for quickly converting all .TGA files in a folder recursively to a format
 
 Powered with maven.. so :
 ```sh
